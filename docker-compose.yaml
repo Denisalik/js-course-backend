@@ -6,13 +6,10 @@ services:
     container_name: db
    volumes:
      - ./data/db:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
     env_file:
       - .env
-  redis:
-    image: "redis:alpine"
-  
+    ports:
+      - "${POSTGRES_PORT}:${POSTGRES_PORT}"
   lichessengine:
     image: 'lichessengine:latest'
     build:
@@ -22,4 +19,3 @@ services:
       - ${PORT}:${PORT}
     depends_on:
       - db
-      - redis
