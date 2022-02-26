@@ -9,6 +9,7 @@ import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { UsersService } from 'src/users/users.service';
 import * as bcrypt from 'bcrypt';
 import { User } from 'src/users/entities/user.entity';
+import { UserNoPassword } from 'src/users/dto/user-no-password.dto';
 
 @Injectable()
 export class AuthService {
@@ -50,8 +51,8 @@ export class AuthService {
     });
     return await this.generateToken(user);
   }
-  private async generateToken(user: User) {
-    const payload = {
+  private async generateToken(user: User | UserNoPassword) {
+    const payload: UserNoPassword = {
       email: user.email,
       username: user.username,
       id: user.id,
@@ -61,5 +62,9 @@ export class AuthService {
     return {
       token: this.jwtService.sign(payload),
     };
+  }
+  async decode(payload: { token: string }) {
+    const decoded = this.jwtService.verify(payload.token) as UserNoPassword;
+    return decoded;
   }
 }

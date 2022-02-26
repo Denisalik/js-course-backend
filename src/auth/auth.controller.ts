@@ -16,4 +16,8 @@ export class AuthController {
   registration(@Body() dto: CreateUserDto) {
     return this.authService.registration(dto);
   }
+  @Post('/relogin')
+  relogin(@Body() payload: { token: string }) {
+    return this.authService.decode(payload);
+  }
 }
