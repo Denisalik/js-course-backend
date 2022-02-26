@@ -6,6 +6,7 @@ import { User } from './users/entities/user.entity';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { RouterModule } from '@nestjs/core';
+import { WsGateway } from './ws.gateway';
 
 @Module({
   imports: [
@@ -43,6 +44,6 @@ import { RouterModule } from '@nestjs/core';
       },
     ]),
   ],
-  providers: [AppService],
+  providers: [AppService, WsGateway],
 })
 export class AppModule {}
