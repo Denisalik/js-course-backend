@@ -1,17 +1,18 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { SequelizeModule } from '@nestjs/sequelize';
-import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { User } from './users/entities/user.entity';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
+import { RouterModule } from '@nestjs/core';
 
 @Module({
   imports: [
     UsersModule,
     ConfigModule.forRoot({
       envFilePath: '.env',
+      isGlobal: true,
     }),
     SequelizeModule.forRoot({
       dialect: 'postgres',
@@ -25,8 +26,23 @@ import { AuthModule } from './auth/auth.module';
       autoLoadModels: true,
     }),
     AuthModule,
+    RouterModule.register([
+      {
+        path: '/api',
+        module: AppModule,
+        children: [
+          {
+            path: '/users',
+            module: UsersModule,
+          },
+          {
+            path: '/auth',
+            module: AuthModule,
+          },
+        ],
+      },
+    ]),
   ],
-  controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule {}

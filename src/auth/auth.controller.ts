@@ -4,17 +4,16 @@ import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { AuthService } from './auth.service';
 
 @ApiTags('Authentication')
-@Controller('auth')
+@Controller('')
 export class AuthController {
-    
-    constructor(private authService: AuthService){}
+  constructor(private authService: AuthService) {}
 
-    @Post('/login')
-    login(@Body() dto: CreateUserDto){
-        return this.authService.login(dto);
-    }
-    @Post('/registration')
-    registration(@Body() dto: CreateUserDto){
-        return this.authService.registration(dto);
-    }
+  @Post('/login')
+  login(@Body() dto: CreateUserDto) {
+    return this.authService.login(dto);
+  }
+  @Post('/registration')
+  registration(@Body() dto: CreateUserDto) {
+    return this.authService.registration(dto);
+  }
 }
