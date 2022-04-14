@@ -17,7 +17,11 @@ import { playGame } from './game/game';
 
 const clients = [];
 
-@WebSocketGateway()
+@WebSocketGateway({
+  cors: {
+    origin: '*',
+  },
+})
 export class WsGateway {
   @WebSocketServer()
   server: Server;
@@ -36,15 +40,12 @@ export class WsGateway {
     @ConnectedSocket() client: Socket,
     @MessageBody('playerName') playerName: string,
     @MessageBody('roomName') roomName: string,
-    @MessageBody('callback') callback: (error?: string) => void,
   ) {
     if (!playerName.length || !roomName.length) {
-      callback('Player name and room name are required.');
-      return;
+      return 'Player name and room name are required.';
     }
     if (games.get(roomName)) {
-      callback('Room already exists.');
-      return;
+      return 'Room already exists.';
     }
     const game = JSON.parse(JSON.stringify(gameState));
     game.playerCount = 1;
@@ -58,7 +59,6 @@ export class WsGateway {
       gameEnv,
       gameState: game,
     });
-    callback();
   }
 
   @SubscribeMessage('joinRoom')
@@ -66,16 +66,13 @@ export class WsGateway {
     @ConnectedSocket() client: Socket,
     @MessageBody('playerName') playerName: string,
     @MessageBody('roomName') roomName: string,
-    @MessageBody('callback') callback: (error?: string) => void,
   ) {
     if (!playerName.length || !roomName.length) {
-      callback('Player name and room name are required.');
-      return;
+      return 'Player name and room name are required.';
     }
     const game = games.get(roomName);
     if (!game || game.playerCount === 2) {
-      callback("Room doesn't exist or is full.");
-      return;
+      return "Room doesn't exist or is full.";
     }
     game.playerCount = 2;
     client.join(roomName);
@@ -89,7 +86,6 @@ export class WsGateway {
       gameState: game,
     });
     this.startGame(roomName, game);
-    callback();
   }
 
   @SubscribeMessage('movePlayer')
