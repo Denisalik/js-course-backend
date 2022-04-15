@@ -64,7 +64,6 @@ export class AuthService {
     };
   }
   async decode(payload: { token: string }) {
-    const decoded = this.jwtService.verify(payload.token) as UserNoPassword;
-    return decoded;
+    return this.jwtService.verify(payload.token) as UserNoPassword;
   }
 }

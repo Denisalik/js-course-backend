@@ -8,7 +8,7 @@ interface UserCreationAttr {
 }
 @Table
 export class User extends Model<User, UserCreationAttr> {
-  @ApiProperty({example: '1', description: 'id'})
+  @ApiProperty({ example: '1', description: 'id' })
   @Column({
     type: DataType.INTEGER,
     unique: true,
@@ -17,23 +17,31 @@ export class User extends Model<User, UserCreationAttr> {
   })
   id: number;
 
-  @ApiProperty({example: 'qwerty', description: 'User name'})
+  @ApiProperty({ example: 'qwerty', description: 'User name' })
   @Column({ type: DataType.STRING, unique: true, allowNull: false })
   username: string;
 
-  @ApiProperty({example: 'qwerty', description: 'Password of a user'})
+  @ApiProperty({ example: 'qwerty', description: 'Password of a user' })
   @Column({ type: DataType.STRING, allowNull: false })
   password: string;
 
-  @ApiProperty({example: 'qwerty@mail.ru', description: 'Email of a user'})
+  @ApiProperty({ example: 'qwerty@mail.ru', description: 'Email of a user' })
   @Column({ type: DataType.STRING, unique: true, allowNull: false })
   email: string;
 
-  @ApiProperty({example: '1', description: 'type of background(constant of a color used in frontend/static image of a avatar on the frontend server)'})
+  @ApiProperty({
+    example: '1',
+    description:
+      'type of background(constant of a color used in frontend/static image of a avatar on the frontend server)',
+  })
   @Column({ type: DataType.INTEGER, allowNull: false, defaultValue: 1 })
   background: number;
 
-  @ApiProperty({example: '1', description: 'type of avatar(static image of a avatar on the frontend server)'})
+  @ApiProperty({
+    example: '1',
+    description:
+      'type of avatar(static image of a avatar on the frontend server)',
+  })
   @Column({ type: DataType.INTEGER, allowNull: false, defaultValue: 1 })
   avatar: number;
 }
