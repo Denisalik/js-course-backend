@@ -10,6 +10,7 @@ import { UsersService } from 'src/users/users.service';
 import * as bcrypt from 'bcrypt';
 import { User } from 'src/users/entities/user.entity';
 import { UserNoPassword } from 'src/users/dto/user-no-password.dto';
+import { LoginUserDto } from 'src/users/dto/login-user.dto';
 
 @Injectable()
 export class AuthService {
@@ -17,13 +18,13 @@ export class AuthService {
     private userService: UsersService,
     private jwtService: JwtService,
   ) {}
-  async login(dto: CreateUserDto) {
+  async login(dto: LoginUserDto) {
     const user = await this.validate(dto);
     return this.generateToken(user);
   }
 
-  private async validate(dto: CreateUserDto) {
-    const user = await this.userService.findByEmail(dto.email);
+  private async validate(dto: CreateUserDto | LoginUserDto) {
+    const user = await this.userService.findByUsername(dto.username);
     const passwordEquals = await bcrypt.compare(dto.password, user.password);
     if (user && passwordEquals) {
       return user;
