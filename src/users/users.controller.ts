@@ -11,6 +11,8 @@ import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { User } from './entities/user.entity';
+import { ChangeSettingsDto } from './dto/change-settings.dto';
+import { ChangeCredentialsDto } from './dto/change-credentials.dto';
 
 @ApiTags('Users')
 @Controller('')
@@ -50,5 +52,19 @@ export class UsersController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.usersService.remove(+id);
+  }
+
+  @ApiOperation({ summary: 'Change Avatar or Background' })
+  @ApiResponse({ status: 200 })
+  @Post('changesettings')
+  changeSettings(@Body() dto: ChangeSettingsDto) {
+    return this.usersService.changeSettings(dto);
+  }
+
+  @ApiOperation({ summary: 'Change Password or Username' })
+  @ApiResponse({ status: 200 })
+  @Post('changecredentials')
+  changeCredentials(@Body() dto: ChangeCredentialsDto) {
+    return this.usersService.changeCredentials(dto);
   }
 }

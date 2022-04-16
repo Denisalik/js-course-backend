@@ -1,7 +1,10 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
+import { ChangeCredentialsDto } from './dto/change-credentials.dto';
+import { ChangeSettingsDto } from './dto/change-settings.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './entities/user.entity';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
@@ -40,6 +43,24 @@ export class UsersService {
       );
     }
     return user;
+  }
+  async changeSettings(dto: ChangeSettingsDto){
+    const user = await this.findByUsername(dto.username);
+    if(dto.background)user.background = dto.background;
+    if(dto.avatar)user.avatar = dto.avatar;
+    await user.save();
+    return true;
+  }
+  
+  async changeCredentials(dto: ChangeCredentialsDto){
+    const user = await this.findByUsername(dto.username);
+    if(dto.password){
+      const hashPassword = await bcrypt.hash(dto.password, 5)
+      user.password = hashPassword;
+    }
+    if(dto.username)user.username = dto.username;
+    await user.save();
+    return true;
   }
 
   async findByEmail(email: string) {
