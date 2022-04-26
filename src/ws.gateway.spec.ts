@@ -5,7 +5,7 @@ import { io } from 'socket.io-client';
 describe('WsGateway', () => {
   let gateway: WsGateway;
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [WsGateway],
     }).compile();
@@ -23,12 +23,18 @@ describe('Game', () => {
   const roomName = Math.random().toString();
 
   beforeAll((done) => {
-    p1 = io('http://localhost:8080');
-    p2 = io('http://localhost:8080');
+    const uri = 'http://localhost:8080';
+    p1 = io(uri);
+    p2 = io(uri);
     p1.on('connect', () => {
-      p2.on('connect', () => {
+      if (p2.connected) {
         done();
-      });
+      }
+    });
+    p2.on('connect', () => {
+      if (p1.connected) {
+        done();
+      }
     });
   });
 
