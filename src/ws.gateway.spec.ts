@@ -49,7 +49,7 @@ describe('Game', () => {
   });
 
   it('should create room on server', (done) => {
-    p1.emit('createRoom', { playerName: 'p1', roomName }, (error) => {
+    p1.emit('joinRoom', { playerName: 'p1', roomName }, (error) => {
       if (error) {
         done(error);
       }

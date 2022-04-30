@@ -27,15 +27,13 @@ export class WsGateway {
   server: Server;
 
   startGame(roomName: string, game: gameStateType) {
-    if (game.ongoing) return;
-    game.ongoing = true;
     this.server.to(roomName).emit('startGame', {});
     setTimeout(() => {
       playGame(this.server, roomName, game);
     }, gameParams.roundBreak);
   }
 
-  @SubscribeMessage('createRoom')
+  @SubscribeMessage('joinRoom')
   createRoom(
     @ConnectedSocket() client: Socket,
     @MessageBody('playerName') playerName: string,
@@ -44,48 +42,30 @@ export class WsGateway {
     if (!playerName.length || !roomName.length) {
       return 'Player name and room name are required.';
     }
-    if (games.get(roomName)) {
-      return 'Room already exists.';
+    const roomExists = games.get(roomName);
+    let game;
+    if (roomExists) {
+      game = games.get(roomName);
+      if (game.full) {
+        return 'Room is full.';
+      }
+      game.full = true;
+      game.p2.name = playerName;
+    } else {
+      game = JSON.parse(JSON.stringify(gameState));
+      game.p1.name = playerName;
+      games.set(roomName, game);
     }
-    const game = JSON.parse(JSON.stringify(gameState));
-    game.playerCount = 1;
-    games.set(roomName, game);
     client.join(roomName);
     clients.push({ client, roomName });
     this.server.to(roomName).emit('gameData', {
-      playerName,
-      playerNumber: 1,
-      roomName,
+      playerNumber: roomExists ? 2 : 1,
       gameEnv,
       gameState: game,
     });
-  }
-
-  @SubscribeMessage('joinRoom')
-  joinRoom(
-    @ConnectedSocket() client: Socket,
-    @MessageBody('playerName') playerName: string,
-    @MessageBody('roomName') roomName: string,
-  ) {
-    if (!playerName.length || !roomName.length) {
-      return 'Player name and room name are required.';
+    if (roomExists) {
+      this.startGame(roomName, game);
     }
-    const game = games.get(roomName);
-    if (!game || game.playerCount === 2) {
-      return "Room doesn't exist or is full.";
-    }
-    game.playerCount = 2;
-    client.join(roomName);
-    clients.push({ client, roomName });
-    this.server.to(roomName).emit('gameData', {
-      playerName,
-      playerNumber: 2,
-      roomName,
-      gameEnv,
-      gameParams,
-      gameState: game,
-    });
-    this.startGame(roomName, game);
   }
 
   @SubscribeMessage('movePlayer')
@@ -119,14 +99,26 @@ export class WsGateway {
     });
   }
 
+  @SubscribeMessage('pauseGame')
+  pauseGame(
+    @MessageBody('playerNumber') playerNumber: number,
+    @MessageBody('roomName') roomName: string,
+  ) {
+    if (games.get(roomName) === null) return;
+    if (playerNumber === 1) {
+      games.get(roomName).p1.paused = !games.get(roomName).p1.paused;
+    } else {
+      games.get(roomName).p2.paused = !games.get(roomName).p2.paused;
+    }
+    this.server.to(roomName).emit('interrupt', { code: playerNumber });
+  }
+
   @SubscribeMessage('disconnect')
-  disconnect(@ConnectedSocket() client: Socket) {
+  handleDisconnect(@ConnectedSocket() client: Socket) {
     for (let i = 0; i < clients.length; i++) {
       if (clients[i].client === client) {
         games.delete(clients[i].roomName);
-        this.server
-          .to(clients[i].roomName)
-          .emit('interrupt', { message: 'Other player disconnected.' });
+        this.server.to(clients[i].roomName).emit('interrupt', { code: 0 });
         clients.splice(i, 1);
         return;
       }
