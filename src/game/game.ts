@@ -89,10 +89,10 @@ export const playGame = (io: Server, roomName: string, game: gameStateType) => {
   }
 
   // Pauses frame updates for "roundBreak" milliseconds
-  function pauseGame() {
-    game.ongoing = false;
+  function pauseBreak() {
+    game.p1.paused = true;
     setTimeout(() => {
-      game.ongoing = true;
+      game.p1.paused = false;
       resetPositions();
     }, gameParams.roundBreak);
   }
@@ -108,7 +108,7 @@ export const playGame = (io: Server, roomName: string, game: gameStateType) => {
         s1: game.p1.score,
         s2: game.p2.score,
       });
-      pauseGame();
+      pauseBreak();
     }
   }
 
@@ -116,16 +116,16 @@ export const playGame = (io: Server, roomName: string, game: gameStateType) => {
   function winnerCheck() {
     if (game.p1.score === gameParams.winningScore) {
       io.to(roomName).emit('winnerUpdate', { winnerNumber: 1 });
-      game.ongoing = false;
+      game.p1.paused = true;
     } else if (game.p2.score === gameParams.winningScore) {
       io.to(roomName).emit('winnerUpdate', { winnerNumber: 2 });
-      game.ongoing = false;
+      game.p1.paused = true;
     }
   }
 
   // Game loop
-  setInterval(() => {
-    if (!game.ongoing) return;
+  game.mainLoop = setInterval(() => {
+    if (game.p1.paused || game.p2.paused) return;
     moveBall();
     collisionCheck();
     scoreCheck();

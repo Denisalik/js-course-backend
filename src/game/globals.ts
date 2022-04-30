@@ -55,15 +55,16 @@ export type ballType = {
 
 // Represents a player
 export type playerType = {
+  name: string;
   x: number;
   y: number;
   score: number;
+  paused: boolean;
 };
 
 // Represents a gameState
 export type gameStateType = {
-  playerCount: number;
-  ongoing: boolean;
+  mainLoop: NodeJS.Timer;
   ball: ballType;
   p1: playerType;
   p2: playerType;
@@ -71,8 +72,7 @@ export type gameStateType = {
 
 // Represents an ongoing game.
 export const gameState: gameStateType = {
-  playerCount: 0,
-  ongoing: false,
+  mainLoop: null,
   ball: {
     x: gameEnv.tableCenter.x - gameEnv.ballRadius,
     y: gameEnv.tableCenter.y - gameEnv.ballRadius,
@@ -81,13 +81,17 @@ export const gameState: gameStateType = {
     speed: gameParams.ballVelocity.v,
   },
   p1: {
+    name: '',
     x: gameEnv.p1Location.x,
     y: gameEnv.p1Location.y,
     score: 0,
+    paused: false,
   },
   p2: {
+    name: '',
     x: gameEnv.p2Location.x,
     y: gameEnv.p2Location.y,
     score: 0,
+    paused: false,
   },
 };
