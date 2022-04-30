@@ -46,10 +46,9 @@ export class WsGateway {
     let game;
     if (roomExists) {
       game = games.get(roomName);
-      if (game.full) {
+      if (game.p1.name.length && game.p2.name.length) {
         return 'Room is full.';
       }
-      game.full = true;
       game.p2.name = playerName;
     } else {
       game = JSON.parse(JSON.stringify(gameState));
@@ -117,6 +116,10 @@ export class WsGateway {
   handleDisconnect(@ConnectedSocket() client: Socket) {
     for (let i = 0; i < clients.length; i++) {
       if (clients[i].client === client) {
+        const game = games.get(clients[i].roomName);
+        if (game) {
+          clearInterval(game.mainLoop);
+        }
         games.delete(clients[i].roomName);
         this.server.to(clients[i].roomName).emit('interrupt', { code: 0 });
         clients.splice(i, 1);

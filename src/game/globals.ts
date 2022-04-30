@@ -64,7 +64,7 @@ export type playerType = {
 
 // Represents a gameState
 export type gameStateType = {
-  full: boolean;
+  mainLoop: NodeJS.Timer;
   ball: ballType;
   p1: playerType;
   p2: playerType;
@@ -72,7 +72,7 @@ export type gameStateType = {
 
 // Represents an ongoing game.
 export const gameState: gameStateType = {
-  full: false,
+  mainLoop: null,
   ball: {
     x: gameEnv.tableCenter.x - gameEnv.ballRadius,
     y: gameEnv.tableCenter.y - gameEnv.ballRadius,

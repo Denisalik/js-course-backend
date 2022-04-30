@@ -124,7 +124,7 @@ export const playGame = (io: Server, roomName: string, game: gameStateType) => {
   }
 
   // Game loop
-  setInterval(() => {
+  game.mainLoop = setInterval(() => {
     if (game.p1.paused || game.p2.paused) return;
     moveBall();
     collisionCheck();
