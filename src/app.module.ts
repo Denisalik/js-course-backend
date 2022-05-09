@@ -11,14 +11,16 @@ import * as fs from 'fs';
 
 let envFilePath = '.env';
 if (process.env.ON_HEROKU) {
-  const arr = process.env.DATABASE_URL.split(':');
+  const params = process.env.DATABASE_URL.match(
+    /postgres:\/\/(?<user>[a-z]+):(?<pass>[a-z\d]+)+@(?<host>[a-z\d\-.]+):(?<port>\d+)\/(?<dbname>[a-z\d]+)/,
+  ).groups;
   fs.writeFile(
     '.env.prod',
-    'POSTGRES_DB=postgres\n' +
-      `POSTGRES_USER=${arr[1].substring(2)}\n` +
-      `POSTGRES_PASSWORD=${arr[2]}\n` +
-      'POSTGRES_HOST=db\n' +
-      'POSTGRES_PORT=5432',
+    `POSTGRES_DB=${params.dbname}\n` +
+      `POSTGRES_USER=${params.user}\n` +
+      `POSTGRES_PASSWORD=${params.pass}\n` +
+      `POSTGRES_HOST=${params.host}\n` +
+      `POSTGRES_PORT=${params.port}`,
     (err) => {
       if (err) throw err;
     },
