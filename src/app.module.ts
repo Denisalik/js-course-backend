@@ -46,6 +46,7 @@ import { WsGateway } from './ws.gateway';
       database: process.env.POSTGRES_DB,
       models: [User],
       autoLoadModels: true,
+      ssl: true,
     }),
     AuthModule,
     RouterModule.register([
