@@ -7,7 +7,7 @@ import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { RouterModule } from '@nestjs/core';
 import { WsGateway } from './ws.gateway';
-import * as fs from 'fs';
+// import * as fs from 'fs';
 
 // let envFilePath = '.env';
 // if (process.env.ON_HEROKU) {
@@ -33,7 +33,7 @@ import * as fs from 'fs';
   imports: [
     UsersModule,
     ConfigModule.forRoot({
-      envFilePath: '.env',
+      ignoreEnvFile: Boolean(process.env.ON_HEROKU),
       isGlobal: true,
     }),
     SequelizeModule.forRoot({
