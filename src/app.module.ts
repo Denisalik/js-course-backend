@@ -15,7 +15,7 @@ if (process.env.ON_HEROKU) {
   ).groups;
   process.env['POSTGRES_DB'] = params.dbname;
   process.env['POSTGRES_USER'] = params.user;
-  process.env['POSTGRES_PASSWORD'] = params.password;
+  process.env['POSTGRES_PASSWORD'] = params.pass;
   process.env['POSTGRES_HOST'] = params.host;
   process.env['POSTGRES_PORT'] = params.port;
 }
