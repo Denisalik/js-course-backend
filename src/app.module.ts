@@ -38,15 +38,19 @@ import { WsGateway } from './ws.gateway';
     }),
     SequelizeModule.forRoot({
       dialect: 'postgres',
+      dialectOptions: {
+        ssl: {
+          require: true,
+          rejectUnauthorized: false,
+        },
+      },
       host: process.env.POSTGRES_HOST,
       port: parseInt(process.env.POSTGRES_PORT),
-
       username: process.env.POSTGRES_USER,
       password: process.env.POSTGRES_PASSWORD,
       database: process.env.POSTGRES_DB,
       models: [User],
       autoLoadModels: true,
-      ssl: true,
     }),
     AuthModule,
     RouterModule.register([
