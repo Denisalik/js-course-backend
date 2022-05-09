@@ -11,6 +11,7 @@ import * as fs from 'fs';
 
 let envFilePath = '.env';
 if (process.env.ON_HEROKU) {
+  console.log('===============ON_HEROKU==================');
   const params = process.env.DATABASE_URL.match(
     /postgres:\/\/(?<user>[a-z]+):(?<pass>[a-z\d]+)+@(?<host>[a-z\d\-.]+):(?<port>\d+)\/(?<dbname>[a-z\d]+)/,
   ).groups;
@@ -20,7 +21,7 @@ if (process.env.ON_HEROKU) {
       `POSTGRES_USER=${params.user}\n` +
       `POSTGRES_PASSWORD=${params.pass}\n` +
       `POSTGRES_HOST=${params.host}\n` +
-      `POSTGRES_PORT=${params.port}`,
+      `POSTGRES_PORT=${params.port}\n`,
     (err) => {
       if (err) throw err;
     },
