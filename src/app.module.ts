@@ -7,12 +7,30 @@ import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { RouterModule } from '@nestjs/core';
 import { WsGateway } from './ws.gateway';
+import fs from 'fs';
+
+let envFilePath = '.env';
+if (process.env.ON_HEROKU) {
+  const arr = process.env.DATABASE_URL.split(':');
+  fs.writeFile(
+    '.env.prod',
+    'POSTGRES_DB=postgres\n' +
+      `POSTGRES_USER=${arr[1].substring(2)}\n` +
+      `POSTGRES_PASSWORD=${arr[2]}\n` +
+      'POSTGRES_HOST=db\n' +
+      'POSTGRES_PORT=5432',
+    (err) => {
+      if (err) throw err;
+    },
+  );
+  envFilePath = '.env.prod';
+}
 
 @Module({
   imports: [
     UsersModule,
     ConfigModule.forRoot({
-      envFilePath: '.env',
+      envFilePath: envFilePath,
       isGlobal: true,
     }),
     SequelizeModule.forRoot({
