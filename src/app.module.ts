@@ -7,27 +7,18 @@ import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { RouterModule } from '@nestjs/core';
 import { WsGateway } from './ws.gateway';
-// import * as fs from 'fs';
 
-// let envFilePath = '.env';
-// if (process.env.ON_HEROKU) {
-//   console.log('===============ON_HEROKU==================');
-//   const params = process.env.DATABASE_URL.match(
-//     /postgres:\/\/(?<user>[a-z]+):(?<pass>[a-z\d]+)+@(?<host>[a-z\d\-.]+):(?<port>\d+)\/(?<dbname>[a-z\d]+)/,
-//   ).groups;
-//   fs.writeFile(
-//     '.env.prod',
-//     `POSTGRES_DB=${params.dbname}\n` +
-//       `POSTGRES_USER=${params.user}\n` +
-//       `POSTGRES_PASSWORD=${params.pass}\n` +
-//       `POSTGRES_HOST=${params.host}\n` +
-//       `POSTGRES_PORT=${params.port}\n`,
-//     (err) => {
-//       if (err) throw err;
-//     },
-//   );
-//   envFilePath = '.env.prod';
-// }
+// If on heroku, set env vars for production db and ignore .env file.
+if (process.env.ON_HEROKU) {
+  const params = process.env.DATABASE_URL.match(
+    /postgres:\/\/(?<user>[a-z]+):(?<pass>[a-z\d]+)+@(?<host>[a-z\d\-.]+):(?<port>\d+)\/(?<dbname>[a-z\d]+)/,
+  ).groups;
+  process.env['POSTGRES_DB'] = params.dbname;
+  process.env['POSTGRES_USER'] = params.user;
+  process.env['POSTGRES_PASSWORD'] = params.password;
+  process.env['POSTGRES_HOST'] = params.host;
+  process.env['POSTGRES_PORT'] = params.port;
+}
 
 @Module({
   imports: [
