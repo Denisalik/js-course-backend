@@ -58,7 +58,7 @@ export class UsersService {
       const hashPassword = await bcrypt.hash(dto.password, 5)
       user.password = hashPassword;
     }
-    if(dto.username)user.username = dto.username;
+    if(dto.username)user.username = dto.newUsername;
     await user.save();
     return true;
   }
